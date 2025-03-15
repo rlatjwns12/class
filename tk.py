@@ -13,6 +13,10 @@ def btn_click(value):
     lbl['text'] = result
     
 
+
+
+    
+
 lbl = Label(tk, text='0', height=5)
 lbl.grid(row=0, columnspan=4)
 
