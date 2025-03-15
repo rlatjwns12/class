@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마리오 게임</title>
+    <style>
+        /* CSS */
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #70c5ce;
+        }
+
+        .game-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+        }
+
+        #mario {
+            position: absolute;
+            bottom: 20px;
+            left: 50px;
+            width: 50px;
+            height: 50px;
+            background-color: red;
+            border-radius: 10px;
+        }
+
+        #ground {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background-color: #6c4f2a;
+        }
+
+        #obstacle {
+            position: absolute;
+            bottom: 50px;
+            right: 0;
+            width: 50px;
+            height: 50px;
+            background-color: green;
+        }
+
+        .jumping {
+            animation: jump 0.5s ease-in-out;
+        }
+
+        @keyframes jump {
+            0% { bottom: 20px; }
+            50% { bottom: 120px; }
+            100% { bottom: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div id="mario"></div>
+        <div id="ground"></div>
+        <div id="obstacle"></div>
+    </div>
+
+    <script>
+        // JavaScript
+        const mario = document.getElementById('mario');
+        const obstacle = document.getElementById('obstacle');
+        let marioPosition = { x: 50, y: 20 };
+        let isJumping = false;
+        let gameInterval;
+
+        // 키보드 이벤트 처리
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowLeft') {
+                moveMario('left');
+            } else if (event.key === 'ArrowRight') {
+                moveMario('right');
+            } else if (event.key === ' ' && !isJumping) {
+                jumpMario();
+            }
+        });
+
+        // 마리오 좌우 움직이기
+        function moveMario(direction) {
+            if (direction === 'left' && marioPosition.x > 0) {
+                marioPosition.x -= 5;
+                mario.style.left = marioPosition.x + 'px';
+            } else if (direction === 'right' && marioPosition.x < window.innerWidth - 50) {
+                marioPosition.x += 5;
+                mario.style.left = marioPosition.x + 'px';
+            }
+        }
+
+        // 마리오 점프
+        function jumpMario() {
+            isJumping = true;
+            mario.classList.add('jumping');
+
+            // 점프 애니메이션 끝나면 isJumping 상태 초기화
+            setTimeout(() => {
+                mario.classList.remove('jumping');
+                isJumping = false;
+            }, 500);
+        }
+
+        // 장애물 이동
+        function moveObstacle() {
+            const obstaclePosition = obstacle.getBoundingClientRect();
+
+            if (obstaclePosition.left < 0) {
+                obstacle.style.left = window.innerWidth + 'px';
+            } else {
+                obstacle.style.left = obstaclePosition.left - 5 + 'px';
+            }
+
+            // 마리오와 장애물 충돌 검사
+            if (obstaclePosition.left < marioPosition.x + 50 &&
+                obstaclePosition.left + 50 > marioPosition.x &&
+                obstaclePosition.bottom < 120) {
+                alert('Game Over!');
+                clearInterval(gameInterval);
+            }
+        }
+
+        // 게임 시작
+        function startGame() {
+            gameInterval = setInterval(moveObstacle, 20);
+        }
+
+        startGame();
+    </script>
+</body>
+</html>
